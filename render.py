@@ -17,8 +17,11 @@ d.text((50, 90), f"contract {S['contract']} · NFT {S['nft_contract'][:10]}...{S
 ts = datetime.fromtimestamp(S["snapshot_time"], timezone.utc).strftime("%Y-%m-%d")
 d.text((50, 125), f"{S['bounties']} bounties · {S['completed_legit']} legit completions · {S['cancelled']} cancelled · {S['open']} open · {S['rows']} wallets", fill=G, font=font(23))
 d.text((50, 158), f"ETH paid out = ETH earned = {S['total_eth_paid_out'][:12]} (gross) · snapshot block {S['snapshot_block']} ({ts})", fill=G, font=font(23))
-d.text((50, 191), f"NFTs: {S['nft_supply']} minted = {S['nfts_held_by_wallets_legit']} legit in wallets + {S['nfts_held_by_protocol_contract_legit']} legit in contract + {S['nfts_held_by_wallets_exploit'] + S['nfts_held_by_protocol_contract_exploit']} exploit-minted", fill=G, font=font(23))
-d.text((50, 224), f"EXCLUDED: {S['completed_by_exploit']} exploit completions ({S['eth_taken_by_exploit_gross']} ETH) in {len(S['exploit_txs'])} txs; whitehat rescue (cancelled bounty) not counted", fill=R, font=font(23))
+d.text((50, 191), f"NFTs: {S['nft_supply']} minted = {S['nfts_held_by_wallets_legit']} legit in wallets + {S['nfts_held_by_protocol_contract_legit']} legit in contract" + (f" + {S['nfts_held_by_wallets_exploit'] + S['nfts_held_by_protocol_contract_exploit']} exploit-minted" if S["completed_by_exploit"] else ""), fill=G, font=font(23))
+if S["completed_by_exploit"]:
+    d.text((50, 224), f"EXCLUDED: {S['completed_by_exploit']} exploit completions ({S['eth_taken_by_exploit_gross']} ETH) in {len(S['exploit_txs'])} txs; whitehat rescue (cancelled bounty) not counted", fill=R, font=font(23))
+else:
+    d.text((50, 224), "Dec 8 exploit did not touch this deployment: all completions issuer-accepted; whitehat rescue (cancelled) not counted", fill=R, font=font(21))
 y = 280
 hdr = ["address", "eth_paid_out", "eth_earned", "nfts_held"]
 xs = [50, 760, 1040, 1320]

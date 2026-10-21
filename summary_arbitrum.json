@@ -1,0 +1,29 @@
+{
+ "chain": "arbitrum",
+ "contract": "0x0aa50ce0d724cc28f8f7af4630c32377b4d5c27d",
+ "nft_contract": "0xddfb1a53e7b73dba09f79fca24765c593d447a80",
+ "snapshot_block": 517036925,
+ "snapshot_time": 1792618916,
+ "bounties": 180,
+ "completed_onchain": 112,
+ "completed_legit": 112,
+ "completed_by_exploit": 0,
+ "exploit_bounty_ids": [],
+ "exploit_txs": {},
+ "eth_taken_by_exploit_gross": "0",
+ "cancelled": 44,
+ "open": 24,
+ "rows": 247,
+ "total_eth_paid_out": "0.31808279",
+ "total_eth_earned": "0.31808279",
+ "nft_supply": 437,
+ "nfts_held_by_wallets_legit": 112,
+ "nfts_held_by_wallets_exploit": 0,
+ "nfts_held_by_protocol_contract_legit": 325,
+ "nfts_held_by_protocol_contract_exploit": 0,
+ "how_accepted": {
+  "acceptClaim by issuer": 102,
+  "resolveVote, vote opened by issuer": 9,
+  "resolveVote (4337 caller), vote opened by issuer": 1
+ }
+}

@@ -1,6 +1,6 @@
 # poidh v2 data: ETH paid out, ETH earned and NFTs held per wallet (exploit-excluded)
 
-Answer to the poidh "poidh Base v2 data" bounty. One row per wallet, read straight from chain state and the contract's
+Answers to the poidh "poidh Base v2 data" and "poidh Arbitrum v2 data" bounties ([Arbitrum section](#arbitrum)). One row per wallet, read straight from chain state and the contract's
 own events. No indexer, no API keys.
 
 ## Base
@@ -74,7 +74,7 @@ paid out or earned. **User refunds** after the incident were plain ETH transfers
 open bounties they covered stay "open" on-chain and count 0. Legit activity on Dec 8 itself (bounties 982-984, claims
 5274, 5311, 5315) is kept; only the transactions above are excluded.
 
-### Re-run
+### Re-run (Base)
 
 ```
 python3 fetch_state.py base state_base.json 52914329      # bounties, participants, claims, NFT owners (Multicall3, pinned block)
@@ -84,3 +84,33 @@ python3 classify.py base state_base.json bs 0xb502c5856f7244dccdd0264a541cc25675
 python3 build_csv.py state_base.json bs/accept_class.json bs/join.json poidh_v2_base_wallets.csv summary_base.json exploit_base.json
 ```
 Needs `eth-abi` and `eth-utils`. Public RPCs: mainnet.base.org, base.drpc.org.
+
+## Arbitrum
+
+**CSV:** [`poidh_v2_arbitrum_wallets.csv`](poidh_v2_arbitrum_wallets.csv) (247 wallets) · summary: [`summary_arbitrum.json`](summary_arbitrum.json) · preview: [`preview_arbitrum.png`](preview_arbitrum.png)
+
+- Main contract `PoidhV2` [`0x0aa50ce0d724cc28f8f7af4630c32377b4d5c27d`](https://arbiscan.io/address/0x0aa50ce0d724cc28f8f7af4630c32377b4d5c27d) (verified on Sourcify; contract body byte-identical to the Base source, so the same flaws exist)
+- NFT contract `POIDH V2` [`0xddfb1a53e7b73dba09f79fca24765c593d447a80`](https://arbiscan.io/address/0xddfb1a53e7b73dba09f79fca24765c593d447a80) (same address as on Base)
+- **Snapshot: Arbitrum One block 517036925** (2026-10-21 21:41 UTC), all reads pinned to it. Same columns, same method, same checks as Base.
+
+| | |
+|---|---|
+| bounties | 180 (112 completed, 44 cancelled, 24 open) |
+| legit completions | **112** (all of them) |
+| total ETH paid out = total ETH earned | **0.31808279 ETH** (gross) |
+| NFTs minted (`totalSupply`) | 437 = 112 in wallets + 325 held by the protocol contract (pending claims on open/cancelled bounties) |
+
+**Did the Dec 8 exploit touch Arbitrum? No.** All 112 `ClaimAccepted` events were traced: 102 `acceptClaim` sent by the
+bounty issuer, 10 `resolveVote` after a vote the issuer opened (1 resolved through a smart wallet). No contract-creation
+or third-party acceptances, no "Exploit" claims; the claims created around Dec 8 (ids 426-434) are ordinary user claims
+and none was accepted. Nothing is excluded from the totals.
+
+**Whitehat rescue (not counted):** [`0x6b5393a6...0f7e24`](https://arbiscan.io/tx/0x6b5393a6952436d933ebf63b0c8427a708d2b1182c6a371ec38e6149aa0f7e24)
+(2025-12-09 02:27:33 UTC, block 408671204, from `0x110e34a24693910ebbc28350893ecd0e149309d6`): same rescue contract
+`0x02e9126AfC799484dB82546fc0289b31738ec2af` opened bounty 179 (0.0001 ETH), helper `0xe0C276F08Af61F33CA4F0DE68485994eed79A1ef`
+joined with 0.02485801 ETH and withdrew inside `cancelOpenBounty`'s refund loop. Bounty 179 ends **cancelled**, so it adds
+nothing. User refunds were sent outside the contract and are not counted; the refunded bounties stay "open" on-chain.
+Details: `exploit_arbitrum.json`.
+
+Re-run: the same five commands with `arbitrum`, `state_arb.json`, `bs_arb/` and contract
+`0x0aa50ce0d724cc28f8f7af4630c32377b4d5c27d` (public RPCs: arb1.arbitrum.io, arbitrum.drpc.org).
